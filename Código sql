@@ -1,0 +1,43 @@
+Create table Cliente(
+    IDCli number(3) Primary key,
+    Cpf   varchar2(14) unique,
+    Nome  varchar2(40),
+    DTNasc date,
+    telefone varchar2(30) 
+);
+Create table Pedidos(
+    IDPed number(5) Primary key,
+    Endereço varchar2(30) not null,
+    Dt_Pedido date,
+    Valor_Pedido varchar2(10) not null,
+    Status varchar2(30),
+    IDCLi number(3) foreign key references Cliente
+    ID_Pagto number(3) foreign key references Método_Pagto
+);
+Create table Método_Pagto(
+    ID_Pagto number(3) primary key,
+    Data_Pagto date,
+    Status varchar2(30)
+);
+Create Table Produtos(
+    ID_Item number(3) Primary key,
+    Qt_Produtos number(2),
+    Valor varchar2(20),
+    Data_add date,
+    Nome varchar2(30),
+    Desc varchar2(70),
+    Id_Categ number(3) foreign key references Categoria
+);
+Create table Pedidos_Produtos(
+    Id_Item number(3),
+    IdPed number(5),
+    Quantidade number(5)
+    PRIMARY KEY (ID_Pedido, ID_Produto),
+    FOREIGN KEY (ID_Pedido) REFERENCES Pedidos,
+    FOREIGN KEY (ID_Produto) REFERENCES Produtos
+);
+Create Table Categoria(
+    Id_Categ number(3) Primary key,
+    Nome Varchar2(30) not null,
+    Desc varchar2(40)
+);
