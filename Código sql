@@ -5,19 +5,26 @@ Create table Cliente(
     DTNasc date,
     telefone varchar2(30) 
 );
-Create table Pedidos(
-    IDPed number(5) Primary key,
-    Endereço varchar2(30) not null,
-    Dt_Pedido date,
-    Valor_Pedido varchar2(10) not null,
-    Status varchar2(30),
-    IDCLi number(3) foreign key references Cliente
-    ID_Pagto number(3) foreign key references Método_Pagto
-);
 Create table Método_Pagto(
     ID_Pagto number(3) primary key,
     Data_Pagto date,
     Status varchar2(30)
+);
+CREATE TABLE Pedidos (
+    IDPed NUMBER(5) PRIMARY KEY,
+    Endereço VARCHAR2(30) NOT NULL,
+    Dt_Pedido DATE,
+    Valor_Pedido NUMBER(10, 2) NOT NULL, 
+    Status VARCHAR2(30),
+    IDCli NUMBER(5),
+    ID_Pagto NUMBER(5),
+    CONSTRAINT pedidos_IDCli_fk FOREIGN KEY (IDCli) REFERENCES Cliente(IDCli), 
+    CONSTRAINT pedidos_ID_Pagto_fk FOREIGN KEY (ID_Pagto) REFERENCES Método_Pagto(ID_Pagto) 
+);
+Create Table Categoria(
+    Id_Categ number(3) Primary key,
+    Nome Varchar2(30) not null,
+    Descricao varchar2(40)
 );
 Create Table Produtos(
     ID_Item number(3) Primary key,
@@ -25,19 +32,28 @@ Create Table Produtos(
     Valor varchar2(20),
     Data_add date,
     Nome varchar2(30),
-    Desc varchar2(70),
-    Id_Categ number(3) foreign key references Categoria
+    Descricao varchar2(70),
+    Id_Categ number(3) constraint Produtos_ID_categ_fk references categoria
 );
 Create table Pedidos_Produtos(
-    Id_Item number(3),
-    IdPed number(5),
+    Id_Item number(3) constraint Pedidos_Produtos_Id_Item_fk references produtos,
+    IdPed number(5) constraint Pedidos_produtos_IdPed_fk references pedidos,
     Quantidade number(5)
-    PRIMARY KEY (ID_Pedido, ID_Produto),
-    FOREIGN KEY (ID_Pedido) REFERENCES Pedidos,
-    FOREIGN KEY (ID_Produto) REFERENCES Produtos
 );
-Create Table Categoria(
-    Id_Categ number(3) Primary key,
-    Nome Varchar2(30) not null,
-    Desc varchar2(40)
-);
+Insert into Cliente
+Values(1, '457.292.522-97', 'Felipe', to_date('10/10/2010', 'dd/mm/yyyy'), '1199460-0885');
+/
+Insert into Pedidos
+values(1, 'Rua Anhangabau', to_date('11/11/2011','dd/mm/yyyy'), 100, 'Aprovado', 1, 1);
+/
+Insert into Método_Pagto
+Values(1, to_date('11/11/2020','dd/mm/yyyy'),'Aprovado');
+/
+Insert into Produtos
+Values(1, 1, 'R$100', to_date('11/11/2011','dd/mm/yyyy'), 'Tênis Nike Vermelho', 'Tênis modelo Nike Vermelho', 1);
+/
+Insert into Categoria
+Values(1,'Usados','Aqui serão os tênis usados');
+/
+Insert into Pedidos_Produtos
+Values(1, 1, 2);
