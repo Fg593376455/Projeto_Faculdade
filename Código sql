@@ -40,6 +40,7 @@ Create table Pedidos_Produtos(
     IdPed number(5) constraint Pedidos_produtos_IdPed_fk references pedidos,
     Quantidade number(5)
 );
+-- Insert nas Tabelas -- 
 Insert into Cliente
 Values(1, '457.292.522-97', 'Felipe', to_date('10/10/2010', 'dd/mm/yyyy'), '1199460-0885');
 /
@@ -57,3 +58,48 @@ Values(1,'Usados','Aqui serão os tênis usados');
 /
 Insert into Pedidos_Produtos
 Values(1, 1, 2);
+/
+-- Criação das Triggers --
+CREATE TABLE log (
+    id INT PRIMARY KEY NOT NULL,
+    nome_tabela VARCHAR(50) NOT NULL,
+    operacao VARCHAR(10) NOT NULL CHECK (operacao IN ('INSERT', 'UPDATE', 'DELETE')),
+    valor_atual VARCHAR(500),
+    valor_novo VARCHAR(500)
+);
+/
+CREATE SEQUENCE log_seq START WITH 1 INCREMENT BY 1;
+/
+CREATE OR REPLACE TRIGGER log_insert_produto
+AFTER INSERT ON Produtos
+FOR EACH ROW
+BEGIN
+  INSERT INTO log (id, nome_tabela, operacao, valor_novo)
+  VALUES (log_seq.NEXTVAL, 'Produto', 'INSERT', :NEW.nome);
+END;
+/
+CREATE OR REPLACE TRIGGER log_update_produto
+AFTER UPDATE ON Produtos
+FOR EACH ROW
+BEGIN
+  INSERT INTO log (id, nome_tabela, operacao, valor_atual, valor_novo)
+  VALUES (log_seq.NEXTVAL, 'Produtos', 'UPDATE', :OLD.nome, :NEW.nome);
+END;
+/
+CREATE OR REPLACE TRIGGER log_delete_produto
+AFTER DELETE ON Produtos
+FOR EACH ROW
+BEGIN
+  INSERT INTO log (id, nome_tabela, operacao, valor_atual)
+  VALUES (log_seq.NEXTVAL, 'Produtos', 'DELETE', :OLD.nome);
+END;
+/
+INSERT INTO Produtos (id_item, qt_produtos, valor, data_add, nome, descricao, id_categ) 
+                VALUES (2, 3, 150, sysdate, 'nike preto e branco', 'tênis nike original', 1);
+
+/
+UPDATE Produtos SET nome = 'Nike azul e branco' WHERE id_item = 1;
+/
+DELETE FROM Produtos WHERE id_item = 2;
+/
+SELECT * FROM log;
